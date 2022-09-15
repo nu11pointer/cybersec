@@ -1,0 +1,8 @@
+__pycache__
+*.log
+*.json
+logs/*
+Dockerfile
+docker-compose.yml
+.env
+src/__pycache__
