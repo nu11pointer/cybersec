@@ -29,8 +29,11 @@ def main():
         admin = False
         for role in ctx.author.roles:
             if (argv.management_role == role.name):
-                admin = True
-        embed = discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=cmd.__help__) if not admin else discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=cmd.__helpadmin__)
+                if (argv.management_channel and argv.management_channel == ctx.channel.name):
+                    admin = True
+
+        desc = cmd.__help__ if not admin else cmd.__helpadmin__
+        embed = discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=desc)
         embed.set_author(name="CYBERSEC", url="https://github.com/fssecur3/cybersec")
         embed.set_footer(text="> Developed by Francisco Spínola (fssecur3)")
         embed.set_thumbnail(url="https://en.gravatar.com/userimage/224659032/c4b7169b35d5b85855a209c844f03543.png?size=200")

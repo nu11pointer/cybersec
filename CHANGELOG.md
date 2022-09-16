@@ -8,3 +8,8 @@
 - Added a new sentence to the hello command
 - Added documentation (README.md)
 - Improved the help page
+
+## 1.1.1 - 16/09/2022 - Security Bug Fix
+
+- Fixed a small bug where the admin help page would show no matter what channel, even if the `management_channel` was active
+- Fixed bug when searching for a CVE (exception if CVE would not exist)
