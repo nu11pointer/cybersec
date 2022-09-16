@@ -60,7 +60,7 @@ The prefix length is limited to a maximum of 7 characters, in case you want to c
 
 ## HELP
 
-On discord, you can get the bot help page by simply sending $help to the chat. The bot should answer with the following list of commands:
+On discord, you can get the bot help page by simply sending `$help` to the chat. The bot should answer with the following list of commands:
 
 ```text
 Command     Description
