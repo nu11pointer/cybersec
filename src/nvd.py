@@ -9,8 +9,9 @@ def cve(cve):
     r = requests.get(CVE_URL + cve.lower() +"?apiKey=" + os.getenv("NVD_API_KEY"))
     data = r.json()
     html = requests.get('https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword='+cve)
-    description = re.split(r".*<\/a><\/td>\\n\\t\\t<td valign=\"top\">(.*)\\n\\n<\/td>\\n\\t<\/tr>\\n\\n<\/table>.*" , str(html.content))[1]
-    final = f'''
+    try:
+        description = re.split(r".*<\/a><\/td>\\n\\t\\t<td valign=\"top\">(.*)\\n\\n<\/td>\\n\\t<\/tr>\\n\\n<\/table>.*" , str(html.content))[1]
+        final = f'''
 **{data['result']['CVE_Items'][0]['cve']['CVE_data_meta']['ID']}**
 ```
 Link: {data['result']['CVE_Items'][0]['cve']['references']['reference_data'][0]['url']}
@@ -20,8 +21,8 @@ Published Date: {data['result']['CVE_Items'][0]['publishedDate'].split('T')[0]}
 Description: 
 {description}
 '''
-    if ('baseMetricV3' in data['result']['CVE_Items'][0]['impact'].keys()):
-        final += f'''
+        if ('baseMetricV3' in data['result']['CVE_Items'][0]['impact'].keys()):
+            final += f'''
 Base Metrics V3:
     Vector:                 {data['result']['CVE_Items'][0]['impact']['baseMetricV3']['cvssV3']['attackVector']}
     Complexity:             {data['result']['CVE_Items'][0]['impact']['baseMetricV3']['cvssV3']['attackComplexity']}
@@ -31,8 +32,8 @@ Base Metrics V3:
     Impact Score:           {data['result']['CVE_Items'][0]['impact']['baseMetricV3']['impactScore']}
     Exploitability Score:   {data['result']['CVE_Items'][0]['impact']['baseMetricV3']['exploitabilityScore']}
 '''
-    if ('baseMetricV2' in data['result']['CVE_Items'][0]['impact'].keys()):
-        final += f'''
+        if ('baseMetricV2' in data['result']['CVE_Items'][0]['impact'].keys()):
+            final += f'''
 Base Metrics V2:
     Vector:                 {data['result']['CVE_Items'][0]['impact']['baseMetricV2']['cvssV2']['accessVector']}
     Complexity:             {data['result']['CVE_Items'][0]['impact']['baseMetricV2']['cvssV2']['accessComplexity']}
@@ -41,7 +42,9 @@ Base Metrics V2:
     ImpactScore:            {data['result']['CVE_Items'][0]['impact']['baseMetricV2']['impactScore']}
     Exploitability Score:   {data['result']['CVE_Items'][0]['impact']['baseMetricV2']['exploitabilityScore']}
 '''
-    final += "```"
+        final += "```"
+    except:
+        final = "Couldn't get information for the provided CVE."
 
     components = ActionRow(Button(label="Details", style=ButtonStyle.blurple, emoji="🔗", url=f"https://nvd.nist.gov/vuln/detail/{cve}"))
 

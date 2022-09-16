@@ -1,3 +1,5 @@
+from datetime import datetime
+from sqlite3 import Timestamp
 import discord
 import os
 import platform
@@ -18,46 +20,57 @@ PATH = str(pathlib.Path(__file__).parent.absolute())
     
 def main():
     argv = parse(__version__)
-    bot = commands.Bot(command_prefix=argv.prefix, case_insensitive=True, allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False))
+    bot = commands.Bot(command_prefix=argv.prefix, case_insensitive=True, allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False), help_command=None)
     if (not os.path.exists(PATH + "/logs")):
         os.mkdir(PATH + "/logs")
-
+    
     @bot.command()
+    async def help(ctx):
+        admin = False
+        for role in ctx.author.roles:
+            if (argv.management_role == role.name):
+                admin = True
+        embed = discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=cmd.__help__) if not admin else discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=cmd.__helpadmin__)
+        embed.set_author(name="CYBERSEC", url="https://github.com/fssecur3/cybersec")
+        embed.set_footer(text="> Developed by Francisco Spínola (fssecur3)")
+        embed.set_thumbnail(url="https://en.gravatar.com/userimage/224659032/c4b7169b35d5b85855a209c844f03543.png?size=200")
+        await ctx.send(embed=embed)
+
+    @bot.command(help="be nice and greet me!")
     async def hello(ctx):
         await ctx.send(cmd.hello(ctx.message.author))
         
-    @bot.command()
+    @bot.command(help="who am I?")
     async def whoami(ctx):
         await ctx.send(cmd.whoami(bot.user.name))
 
-    @bot.command()
+    @bot.command(help="why not?")
     async def id(ctx):
         await ctx.send(cmd.id(bot.user.name.lower(), ctx.author.name))
 
-    @bot.command()
+    @bot.command(help="check the bot latency")
     async def ping(ctx):
         await ctx.send(cmd.ping(bot.latency))
     
-    @bot.command()
+    @bot.command(help="display the current API keys")
     @commands.has_role(argv.management_role)
     async def env(ctx):
-        print(ctx.message.content)
         if (argv.management_channel and not ctx.channel.name == argv.management_channel):
             await ctx.send("Unauthorized! This action will be logged.")
             log.unauthorized(ctx.author, ctx.channel.name, cmd=ctx.command)
             return
         await ctx.send(admin.env())
     
-    @bot.command()
+    @bot.command(help="modify or Add a value to a variable")
     @commands.has_role(argv.management_role)
-    async def set(ctx, var=None, value=None):
+    async def set(ctx, variable=None, value=None):
         if (argv.management_channel and not ctx.channel.name == argv.management_channel):
             await ctx.send("Unauthorized! This action will be logged.")
             log.unauthorized(ctx.author, ctx.channel.name, cmd=ctx.command)
             return
-        await ctx.send(admin.set(bot, var, value))
+        await ctx.send(admin.set(bot, variable, value))
         
-    @bot.command()
+    @bot.command(help="get details from a CVE")
     async def cve(ctx, value):
         if (not os.getenv("NVD_API_KEY")):
             await ctx.send("Please set the `NVD_API_KEY` token!")
@@ -66,7 +79,7 @@ def main():
         out, components = nvd.cve(value)
         await ctx.send(out, components=components)
         
-    @bot.command()
+    @bot.command(help="search for CTFtime writeups related to the provided keywords")
     async def search(ctx, *, vars):
         if(not vars):
             await ctx.send(f"Missing a required argument. Use {bot.command_prefix}help.")
@@ -81,7 +94,7 @@ def main():
 
         await ctx.send(response, components=components)
 
-    @bot.command(category="Search", help="Search for a given hash on VirusTotal")
+    @bot.command(help="search for a given hash on VirusTotal")
     async def vt(ctx, hash):
         if (not os.getenv("VIRUSTOTAL_API_KEY")):
             await ctx.send("Please set the `VIRUSTOTAL_API_KEY` token!")
@@ -90,12 +103,12 @@ def main():
         out, components = virustotal.submit(hash)
         await ctx.send(out, components=components)
     
-    @bot.command()
+    @bot.command(help="decode a given string")
     async def decode(ctx, type, *, data):
         decoded = encoding.decoder(type, data)
         await ctx.send(decoded)
 
-    @bot.command()
+    @bot.command(help="encode a given string")
     async def encode(ctx, type, *, data):
         encoded = encoding.encoder(type, data)
         await ctx.send(encoded)

@@ -5,7 +5,10 @@ from discord import ActionRow, Button, ButtonStyle
 VT_URL = "https://www.virustotal.com/api/v3/files/"
 
 def submit(hash):
+    final = ""
+    avail = False
     headers = {"X-Apikey": os.getenv("VIRUSTOTAL_API_KEY")}
+    malshareapi = os.getenv("MALSHARE_API_KEY")
     url = VT_URL + hash.lower()
     r = requests.get(url, headers=headers)
     data = r.json()
@@ -13,17 +16,19 @@ def submit(hash):
     try:
         detected = data['data']['attributes']['last_analysis_stats']['malicious']
         if (detected) > 0:
-            final = "**MALWARE DETECTED**"
+            final += "**MALWARE DETECTED**"
+        else:
+            final += "**FILE NOT DETECTED**"
     except:
-        final = "**FILE NOT DETECTED**"
+        final += "**FILE NOT DETECTED**"
     
     try:
         final += f"""
 ```
-Detection: {data['data']['attributes']['last_analysis_stats']['malicious']}/{len(data['data']['attributes']['last_analysis_results'].keys())}
+Detection: {str(data['data']['attributes']['last_analysis_stats']['malicious'])}/{str(len(data['data']['attributes']['last_analysis_results'].keys()))}
 Type: {data["data"]["attributes"]["type_description"]}
-Reputation: {data["data"]["attributes"]["reputation"]}
-Times Submitted: {data["data"]["attributes"]["times_submitted"]}
+Reputation: {str(data["data"]["attributes"]["reputation"])}
+Times Submitted: {str(data["data"]["attributes"]["times_submitted"])}
 """
         try:
             final += f'Threat Label: {data["data"]["attributes"]["popular_threat_classification"]["suggested_threat_label"]}\n'
@@ -86,9 +91,27 @@ Times Submitted: {data["data"]["attributes"]["times_submitted"]}
         final += f"""
 ```
 """
+
+        if (malshareapi):
+            sha256 = data["data"]["attributes"]["sha256"]
+            validate = requests.get(f"https://malshare.com/api.php?api_key={malshareapi}&action=details&hash={sha256}")
+            if (validate.status_code == 200):
+                avail = True
+        else:
+            final += "\n*Info: Provide a Malshare API Key to be able to download malware samples!*"
+
     except Exception:
         final = "Invalid hash or hash not found!"
+        avail = False
 
-    components = ActionRow(Button(label="Details", style=ButtonStyle.red, emoji="🔗", url=f"https://virustotal.com/gui/file/{hash}"))
+    if (avail):
+        components = ActionRow(
+            Button(label="Details", style=ButtonStyle.blurple, emoji="🔗", url=f"https://virustotal.com/gui/file/{hash}"),
+            Button(label="Download Sample", style=ButtonStyle.Danger, emoji="💾", url=f"https://malshare.com/api.php?api_key={malshareapi}&action=getfile&hash={sha256}")
+        )
+    else:
+        components = ActionRow(
+            Button(label="Details", style=ButtonStyle.blurple, emoji="🔗", url=f"https://virustotal.com/gui/file/{hash}")
+        )
     
     return final, components

@@ -6,29 +6,33 @@ def env():
 NVD_API_KEY         =   {os.getenv("NVD_API_KEY")}
 GOOGLE_API_KEY      =   {os.getenv("GOOGLE_API_KEY")}
 VIRUSTOTAL_API_KEY  =   {os.getenv("VIRUSTOTAL_API_KEY")}
+MALSHARE_API_KEY    =   {os.getenv("MALSHARE_API_KEY")}
 ```"""
 
     return res
 
-def set(bot, var=None, value=None):
+def set(bot, variable=None, value=None):
     msg = ""
     
-    if (not var or not value):
+    if (not variable or not value):
         msg = f"Invalid command."
-    elif (var == "prefix"):
+    elif (variable == "prefix"):
         if (len(value) > 7):
             msg = f"New prefix is too long!"
         else:
             bot.command_prefix = value
             msg = f"Prefix changed to {bot.command_prefix} successfully."
-    elif (var == "NVD_API_KEY"):
-        os.environ[var] = value
+    elif (variable == "NVD_API_KEY"):
+        os.environ[variable] = value
         msg = f"API key has been set successfully."
-    elif (var == "GOOGLE_API_KEY"):
-        os.environ[var] = value
+    elif (variable == "GOOGLE_API_KEY"):
+        os.environ[variable] = value
         msg = f"API key has been set successfully."
-    elif (var == "VIRUSTOTAL_API_KEY"):
-        os.environ[var] = value
+    elif (variable == "VIRUSTOTAL_API_KEY"):
+        os.environ[variable] = value
+        msg = f"API key has been set successfully."
+    elif (variable == "MALSHARE_API_KEY"):
+        os.environ[variable] = value
         msg = f"API key has been set successfully."
     else:
         msg = f"Invalid command."
