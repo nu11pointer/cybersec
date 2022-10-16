@@ -1,3 +1,7 @@
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![github: stargazers](https://img.shields.io/github/stars/fssecur3/cybersec)](https://github.com/fssecur3/cybersec/stargazers)
+[![license: GPL-3.0](https://img.shields.io/github/license/fssecur3/cybersec)](https://github.com/fssecur3/cybersec/blob/main/LICENSE.md)
+
 # CYBERSEC DISCORD BOT
 
 > An easy to use cybersecurity discord bot that attempts to make the life easier for individuals, teams and groups interested in researching, sharing, learning, or even playing some CTFs.
@@ -11,11 +15,12 @@ Features:
 - Search for CTF writeups, on [CTFtime](https://ctftime.org/), related to given keywords
 - Verify if an hash belongs to a malicious file and get the details from that file
 - Download malware samples by simply providing its hash
-- Search and find details of CVEs
+- Search and find details from CVEs
+- Search for public exploits
 
 You should register on the platforms listed below to retrieve the API keys and get the full potential of the bot.
 
-Used APIs:
+Used APIs (you can get the API keys from the links below):
 
 - [Google](https://cloud.google.com/docs/authentication/api-keys)
 - [NVD](https://nvd.nist.gov/developers/request-an-api-key)
@@ -24,16 +29,32 @@ Used APIs:
 
 For security and management purposes, there are 2 log files being used: `access.log` and `error.log`. The first one reveals when, who and how a user tried to execute sensitive commands on the bot. The other one outlines runtime errors that might arouse from the bot. These are stored in the `logs` folder (created when the bot is executed for the first time).
 
-*Note: The amount of information given by the several API commands (such as `search`, `vt` and `cve`) will depend on the availability from those external services and the amount of data retrieved from the search results. Some results contain more information than others.*
+All the code is verified using [Bandit](https://github.com/PyCQA/bandit) - security oriented static analyser for python code - before published.
+
+*Note: The amount of information given by the several API commands (such as `writeup`, `vt`, `cve` and `exploit`) will depend on the availability from those external services and the amount of data retrieved from the search results. Some results contain more information than others.*
 
 ## INSTALL
 
-To install the bot it's as simple as cloning the repository and installing the python requirements:
+Requirements:
+
+- python3
+- python3-pip
+- git
+
+### Windows
+
+```bat
+git clone https://github.com/fssecur3/cybersec
+cd cybersec
+pip install -r requirements.txt
+```
+
+### Linux
 
 ```sh
 git clone https://github.com/fssecur3/cybersec
 cd cybersec
-pip install -r requirements.txt
+./install.sh
 ```
 
 You can set up the API keys right away by creating environment variables with the names shown at the end of the README and setting their value to the key. If you want to set them up later, you can use the bot command `set` to set the API keys.
@@ -43,7 +64,7 @@ You can set up the API keys right away by creating environment variables with th
 There are some arguments (required and optional) to be passed when starting the bot:
 
 ```text
-usage: main.py [-h] -r role [-c channel] [-p prefix] [-V]
+usage: cybersec [-h] -r role [-c channel] [-p prefix] [-V]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -73,19 +94,21 @@ hello       be nice and greet me
 help        shows this page
 id          why not?
 ping        check the bot latency
-search      search for CTFtime writeups
+exploit     search for exploits (from Exploit DB)
 set         modify API keys or bot prefix
 vt          search for a given hash on VirusTotal
 whoami      who am I?
+writeup     search for CTFtime writeups
 
 Command     Arguments
 ------      ------
 cve         <CVE>
 decode      <b64|url> <text>
 encode      <b64|url> <text>
+exploit     <keyword> [<keyword> ...]
 set         <prefix|API Variable> <value>
 vt          <hash>
-search      <keyword> [<keyword> ...]
+writeup     <keyword> [<keyword> ...]
 
 API Variables
 ------
@@ -99,22 +122,27 @@ VIRUSTOTAL_API_KEY
 
 1. Searching for a CVE
 
-Command: `$cve CVE-2020-1921`
+Command: `$cve CVE-2020-1921`  
 ![CVE](img/1.png)
 
 2. Getting information about a file hash and download link
 
-Command: `$vt 84c82835a5d21bbcf75a61706d8ab549`
+Command: `$vt 84c82835a5d21bbcf75a61706d8ab549`  
 ![VT](img/2.png)
 
 3. Searching for writeups
 
-Command: `$search format string pie`
+Command: `$writeup format string pie`  
 ![CTF](img/3.png)
 
 4. Encoding text
 
-Command: `$encode b64 hello there`
+Command: `$encode b64 hello there`  
 ![B64](img/4.png)
+
+5. Searching for public exploits
+
+Command: `$exploit goahead 2.1`  
+![EDB](img/5.png)
 
 ***Enjoy! 🙂***

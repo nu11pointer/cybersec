@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from datetime import datetime
 from sqlite3 import Timestamp
 import discord
@@ -64,7 +66,7 @@ def main():
             return
         await ctx.send(admin.env())
     
-    @bot.command(help="modify or Add a value to a variable")
+    @bot.command(help="modify or add a value to a variable")
     @commands.has_role(argv.management_role)
     async def set(ctx, variable=None, value=None):
         if (argv.management_channel and not ctx.channel.name == argv.management_channel):
@@ -72,6 +74,11 @@ def main():
             log.unauthorized(ctx.author, ctx.channel.name, cmd=ctx.command)
             return
         await ctx.send(admin.set(bot, variable, value))
+    
+    @bot.command(help="search for public exploits on Exploit DB")
+    async def exploit(ctx, *, keywords):
+        out, components = cmd.exploit(keywords)
+        await ctx.send(out, components=components)
         
     @bot.command(help="get details from a CVE")
     async def cve(ctx, value):
@@ -83,7 +90,7 @@ def main():
         await ctx.send(out, components=components)
         
     @bot.command(help="search for CTFtime writeups related to the provided keywords")
-    async def search(ctx, *, vars):
+    async def writeup(ctx, *, vars):
         if(not vars):
             await ctx.send(f"Missing a required argument. Use {bot.command_prefix}help.")
             return
@@ -142,7 +149,7 @@ def main():
     try:
         bot.run(TOKEN)
     except discord.errors.LoginFailure:
-        print("Unauthorized: Improper token has beed passed!")
+        print("Unauthorized: Improper token provided!")
     except RuntimeError:
         print("Aborting...")
 

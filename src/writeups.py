@@ -21,7 +21,7 @@ Results:"""
     for i in range(len(results)):
         try:
             r = results[i]
-            response += f"\n{i + 1}  |  {r['snippet'][0:145]}..."
+            response += f"\n{i + 1}  |  {r['snippet'][0:145]}...\n"
         except:
             break
         if i == 4:
@@ -34,7 +34,7 @@ Results:"""
         response += "..."
     """
     
-    response += "\n```"
+    response += "```"
     
     components = None
 

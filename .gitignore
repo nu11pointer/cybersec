@@ -6,4 +6,4 @@ Dockerfile
 docker-compose.yml
 .env
 src/__pycache__
-TODO.md
+TODO.txt
