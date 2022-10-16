@@ -7,6 +7,7 @@ import os
 import platform
 import pathlib
 from discord.ext import commands
+import src.exploit as searchsploit
 import src.log as log
 import src.virustotal as virustotal
 import src.encoding as encoding
@@ -77,7 +78,7 @@ def main():
     
     @bot.command(help="search for public exploits on Exploit DB")
     async def exploit(ctx, *, keywords):
-        out, components = cmd.exploit(keywords)
+        out, components = searchsploit.exploit(keywords)
         await ctx.send(out, components=components)
         
     @bot.command(help="get details from a CVE")
@@ -91,6 +92,7 @@ def main():
         
     @bot.command(help="search for CTFtime writeups related to the provided keywords")
     async def writeup(ctx, *, vars):
+        """
         if(not vars):
             await ctx.send(f"Missing a required argument. Use {bot.command_prefix}help.")
             return
@@ -101,6 +103,10 @@ def main():
         query = f"site:ctftime.org inurl:writeup {vars}"
 
         response, components = writeups.search(query)
+        """
+
+        response = "Command is disabled. It will be back soon."
+        components = None
 
         await ctx.send(response, components=components)
 

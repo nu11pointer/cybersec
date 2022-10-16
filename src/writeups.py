@@ -12,18 +12,20 @@ def search(query):
 ```
 Results:"""
     results = service.cse().list(q=query, cx=searchengineId).execute()
+
     if "items" in results.keys():
         results = results["items"]
     else:
-        results = ""
+        results = "No results returned."
         return results, None
 
     for i in range(len(results)):
         try:
             r = results[i]
-            response += f"\n{i + 1}  |  {r['snippet'][0:145]}...\n"
+            response += f"\n{i + 1}  |  {r['snippet'][0:120].replace('```', '`')}...\n"
         except:
-            break
+            return "Error while performing query.", None
+
         if i == 4:
             break
     

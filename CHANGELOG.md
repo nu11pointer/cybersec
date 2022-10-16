@@ -14,10 +14,21 @@
 - Fixed a small bug where the admin help page would show no matter what channel, even if the `management_channel` was active
 - Fixed bug when searching for a CVE (exception if CVE would not exist)
 
-## 1.2.0 - 17/09/2022 - Searching for exploits
+## 1.2.0 - 16/10/2022 - Searching for exploits
 
 - Added an install script that automatically installs all the requirements to run the bot
 - You are now able to search for exploits (like you do when using searchsploit), using the Exploit DB, calling the `exploit` command
 - Now, instead of using `search` to search for writeups, you should use `writeup`
 - Small improvements on the overall usage
 - Documentation improvements
+
+## 1.2.1 - 16/10/2022 - Bug fixes
+
+- Fixed (empty) response of when there are no results for a writeup search
+- Fixed badly formatted response when it contains ` ``` ` in the results of a writeup search
+- Changed exploit search structure (has a new source file dedicated to it)
+- Fixed no response when no results were found while searching for exploits
+- Fixed no responde when too many results were found while searching for exploits
+- Fixed no escaping of `"` in logs.
+- Now the exploit search results provide the number of exploits found
+- Disabled writeup search for now (API permissions problem yet to be solved)
