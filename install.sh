@@ -7,7 +7,6 @@ sudo apt-get install -y -qq python3 python3-pip >/dev/null
 pip uninstall -y -qq discord.py
 pip uninstall -y -qq pydiscord
 pip uninstall -y -qq python-discord
-pip install --progress-bar off -qq discord.py-message-components
 pip install --progress-bar off -qq -r requirements.txt
 echo -e "Finishing up..."
 echo "#!/bin/bash" > cybersec
