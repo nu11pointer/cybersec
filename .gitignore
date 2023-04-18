@@ -7,3 +7,4 @@ docker-compose.yml
 .env
 src/__pycache__
 TODO.txt
+session.txt

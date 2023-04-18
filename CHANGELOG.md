@@ -32,3 +32,7 @@
 - Fixed no escaping of `"` in logs.
 - Now the exploit search results provide the number of exploits found
 - Disabled writeup search for now (API permissions problem yet to be solved)
+
+## 1.2.2 - 18/04/2023 - Bug fixed
+
+- Exploit command was down due to outdated source
