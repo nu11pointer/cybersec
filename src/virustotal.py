@@ -16,11 +16,11 @@ def submit(hash):
     try:
         detected = data['data']['attributes']['last_analysis_stats']['malicious']
         if (detected) > 0:
-            final += "**MALWARE DETECTED**"
+            final += "🚨 **MALWARE DETECTED** 🚨"
         else:
-            final += "**FILE NOT DETECTED**"
+            final += "✅ **FILE NOT DETECTED** ✅"
     except:
-        final += "**FILE NOT DETECTED**"
+        final += "✅ **FILE NOT DETECTED** ✅"
     
     try:
         final += f"""

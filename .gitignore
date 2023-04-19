@@ -8,3 +8,4 @@ docker-compose.yml
 src/__pycache__
 TODO.txt
 session.txt
+.google-cookie

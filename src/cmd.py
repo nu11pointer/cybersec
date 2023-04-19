@@ -1,4 +1,5 @@
 import random
+from src.hashes import ALGS
 from src.version import __version__
 
 def hello(name):
@@ -48,6 +49,7 @@ __help__ = f"""
 ```
 Command     Description
 ------      -------
+crack       crack a hash
 cve         get details from a CVE
 decode      decode a given string
 encode      encode a given string
@@ -62,12 +64,17 @@ writeup     search for CTFtime writeups
 
 Command     Arguments
 ------      ------
+crack       <algorithm> <hash>
 cve         <CVE>
 decode      <b64|url> <text>
 encode      <b64|url> <text>
 exploit     <keyword> [<keyword> ...]
 vt          <hash>
 writeup     <keyword> [<keyword> ...]
+
+Hash Algorithms
+------
+{", ".join(ALGS)}
 ```
 `v{__version__}`
 """
@@ -76,6 +83,7 @@ __helpadmin__ = f"""
 ```
 Command     Description
 ------      -------
+crack       crack a hash
 cve         get details from a CVE
 decode      decode a given string
 encode      encode a given string
@@ -92,6 +100,7 @@ writeup     search for CTFtime writeups
 
 Command     Arguments
 ------      ------
+crack       <algorithm> <hash>
 cve         <CVE>
 decode      <b64|url> <text>
 encode      <b64|url> <text>
@@ -100,9 +109,12 @@ set         <prefix|API Variable> <value>
 vt          <hash>
 writeup     <keyword> [<keyword> ...]
 
+Hash Algorithms
+------
+{", ".join(ALGS)}
+
 API Variables
 ------
-GOOGLE_API_KEY
 MALSHARE_API_KEY
 NVD_API_KEY
 VIRUSTOTAL_API_KEY

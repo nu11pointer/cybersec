@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
-from sqlite3 import Timestamp
 import discord
 import os
 import platform
@@ -15,6 +13,7 @@ import src.nvd as nvd
 import src.cmd_admin as admin
 import src.cmd as cmd
 import src.writeups as writeups
+import src.hashes as hashes
 from src.args import parse
 from src.version import __version__
 
@@ -99,14 +98,10 @@ def main():
         if (not os.getenv("GOOGLE_API_KEY")):
             await ctx.send(f"Please set the `GOOGLE_API_KEY` token!")
             return
-
+        """
         query = f"site:ctftime.org inurl:writeup {vars}"
 
         response, components = writeups.search(query)
-        """
-
-        response = "Command is disabled. It will be back soon."
-        components = None
 
         await ctx.send(response, components=components)
 
@@ -128,6 +123,11 @@ def main():
     async def encode(ctx, type, *, data):
         encoded = encoding.encoder(type, data)
         await ctx.send(encoded)
+    
+    @bot.command(help="crack a hash")
+    async def crack(ctx, alg, hash):
+        ret = hashes.crack(alg, hash)
+        await ctx.send(ret)
             
     @bot.event
     async def on_ready():

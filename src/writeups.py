@@ -1,55 +1,62 @@
-import os
-from googleapiclient.discovery import build
+import requests
+import urllib
+from bs4 import BeautifulSoup
 from discord import ActionRow, Button, ButtonStyle
 
 def search(query):
-    searchengineId='30caf11dcffda85e3'
-    service = build("customsearch", "v1", developerKey = os.getenv("GOOGLE_API_KEY"))
-    abc = query.split("site:ctftime.org inurl:writeup")[1].strip()
-    response = f"**Query:** `{abc}`"
+    components = None
+    headers = {"User-Agent": "Mozilla/5.0 CyberSec"}
+    pre = requests.post("https://consent.google.com/save?continue=https://www.google.com/&gl=GB&m=0&pc=shp&x=5&src=2&hl=en&bl=gws_20230417-0_RC2&uxe=none&set_eom=true", headers=headers)
+    url = "https://www.google.com/search?q="
+    encoded_query = urllib.parse.quote_plus(f"{query}", safe=":")
+    url += encoded_query
+    req = requests.get(url, headers=headers, cookies=pre.cookies)
+    if (req.status_code == 429):
+        response = "Too many requests! Wait a few minutes and try again."
+        return response, components
+    soup = BeautifulSoup(req.text, 'html.parser')
+    results = []
+    for entry in soup.find_all('div', class_="Gx5Zad fP1Qef xpd EtOod pkphOe"):
+        title = entry.find('h3').div.get_text()
+        link = entry.find('a')['href'].split("=")[1].split("&")[0]
+        description = entry.find('div', class_="BNeawe s3v9rd AP7Wnd").div.div.div.get_text()
+        results.append({'title': title, 'link': link, 'description': description})
+    
+    q = query.split("site:ctftime.org inurl:writeup")[1].strip()
+    response = f"**Query:** `{q}`"
     response += f"""
 
+Results:
 ```
-Results:"""
-    results = service.cse().list(q=query, cx=searchengineId).execute()
-
-    if "items" in results.keys():
-        results = results["items"]
-    else:
-        results = "No results returned."
-        return results, None
-
+"""
     for i in range(len(results)):
         try:
             r = results[i]
-            response += f"\n{i + 1}  |  {r['snippet'][0:120].replace('```', '`')}...\n"
+            length = len(r["title"])
+            for z in range(length + 7):
+                response += "~"
+            response += "\n"
+            
+            response += "| " + f"{i + 1}. "
+            response += r["title"] + " |\n"
+            for z in range(length + 7):
+                response += "~"
+            response += "\n\t" + r["description"].replace("`", "")
+            response += "\n\n"
         except:
             return "Error while performing query.", None
 
         if i == 4:
             break
-    
-    """
-    if (len(response) > 1997):
-        response = response[:1997]
-    if (len(response) == 1997):
-        response += "..."
-    """
-    
+
     response += "```"
     
-    components = None
-
-    components = ActionRow(
-        Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
-        Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"]),
-        Button(label="", style=ButtonStyle.red, emoji="3️⃣", url=results[2]["link"]),
-        Button(label="", style=ButtonStyle.red, emoji="4️⃣", url=results[3]["link"]),
-        Button(label="", style=ButtonStyle.red, emoji="5️⃣", url=results[4]["link"]),
-        #Button(label="", style=ButtonStyle.red, emoji="6️⃣", url=results[5]["link"]),
-        #Button(label="", style=ButtonStyle.red, emoji="7️⃣", url=results[6]["link"]),
-        #Button(label="", style=ButtonStyle.red, emoji="8️⃣", url=results[7]["link"]),
-        #Button(label="", style=ButtonStyle.red, emoji="9️⃣", url=results[8]["link"]),
-        #Button(label="", style=ButtonStyle.red, emoji="🔟", url=results[9]["link"])
-    )
+    if (len(results) >= 5):
+        components = ActionRow(
+                Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
+                Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"]),
+                Button(label="", style=ButtonStyle.red, emoji="3️⃣", url=results[2]["link"]),
+                Button(label="", style=ButtonStyle.red, emoji="4️⃣", url=results[3]["link"]),
+                Button(label="", style=ButtonStyle.red, emoji="5️⃣", url=results[4]["link"])
+            )
     return response, components

@@ -4,7 +4,6 @@ def env():
     res = f"""
 ```
 NVD_API_KEY         =   {os.getenv("NVD_API_KEY")}
-GOOGLE_API_KEY      =   {os.getenv("GOOGLE_API_KEY")}
 VIRUSTOTAL_API_KEY  =   {os.getenv("VIRUSTOTAL_API_KEY")}
 MALSHARE_API_KEY    =   {os.getenv("MALSHARE_API_KEY")}
 ```"""
@@ -22,16 +21,7 @@ def set(bot, variable=None, value=None):
         else:
             bot.command_prefix = value
             msg = f"Prefix changed to {bot.command_prefix} successfully."
-    elif (variable == "NVD_API_KEY"):
-        os.environ[variable] = value
-        msg = f"API key has been set successfully."
-    elif (variable == "GOOGLE_API_KEY"):
-        os.environ[variable] = value
-        msg = f"API key has been set successfully."
-    elif (variable == "VIRUSTOTAL_API_KEY"):
-        os.environ[variable] = value
-        msg = f"API key has been set successfully."
-    elif (variable == "MALSHARE_API_KEY"):
+    elif (variable == "NVD_API_KEY" or variable == "VIRUSTOTAL_API_KEY" or variable == "MALSHARE_API_KEY"):
         os.environ[variable] = value
         msg = f"API key has been set successfully."
     else:

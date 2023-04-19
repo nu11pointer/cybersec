@@ -11,7 +11,7 @@ def error(cmd, output):
 def unauthorized(user, channel, cmd):
     time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     file = f"{PATH}/logs/access.log"
-    cmd = cmd.replace('"', "\\\"")
+    cmd = str(cmd).replace('"', "\\\"")
     message = f"{time}: User '{str(user)}' attempted to execute '{cmd}' on #{channel}\n"
     __log__(file, message)
 

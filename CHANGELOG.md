@@ -36,3 +36,12 @@
 ## 1.2.2 - 18/04/2023 - Bug fixed
 
 - Exploit command was down due to outdated source
+
+## 1.3.0 - 19/04/2023 - Hash Cracker
+
+- Fixed unauthorized access logging bug which was raising exception
+- New command "crack" - has the ability to try and "crack" a hash by accessing the Hash-Decrypt API
+- Removed the Google API
+- Fixed writeup searching
+- Interface improvement
+- Fixed writeup flaw which caused interface bugs when containing ` characters in the description
