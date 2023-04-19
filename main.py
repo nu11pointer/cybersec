@@ -23,8 +23,8 @@ PATH = str(pathlib.Path(__file__).parent.absolute())
 def main():
     argv = parse(__version__)
     bot = commands.Bot(command_prefix=argv.prefix, case_insensitive=True, allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False), help_command=None)
-    if (not os.path.exists(PATH + "/logs")):
-        os.mkdir(PATH + "/logs")
+    if (not os.path.exists(os.path.join(PATH, "logs"))):
+        os.mkdir(os.path.join(PATH, "logs"))
     
     @bot.command()
     async def help(ctx):
@@ -91,14 +91,6 @@ def main():
         
     @bot.command(help="search for CTFtime writeups related to the provided keywords")
     async def writeup(ctx, *, vars):
-        """
-        if(not vars):
-            await ctx.send(f"Missing a required argument. Use {bot.command_prefix}help.")
-            return
-        if (not os.getenv("GOOGLE_API_KEY")):
-            await ctx.send(f"Please set the `GOOGLE_API_KEY` token!")
-            return
-        """
         query = f"site:ctftime.org inurl:writeup {vars}"
 
         response, components = writeups.search(query)

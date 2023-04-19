@@ -33,11 +33,11 @@
 - Now the exploit search results provide the number of exploits found
 - Disabled writeup search for now (API permissions problem yet to be solved)
 
-## 1.2.2 - 18/04/2023 - Bug fixed
+## 1.2.2 - 18/04/2023 - Bug fixes
 
 - Exploit command was down due to outdated source
 
-## 1.3.0 - 19/04/2023 - Hash Cracker
+## 1.3.0 - 19/04/2023 - Hash cracker
 
 - Fixed unauthorized access logging bug which was raising exception
 - New command "crack" - has the ability to try and "crack" a hash by accessing the Hash-Decrypt API
@@ -45,3 +45,8 @@
 - Fixed writeup searching
 - Interface improvement
 - Fixed writeup flaw which caused interface bugs when containing ` characters in the description
+
+## 1.3.1 - 19/04/2023 - Bug fixes
+
+- Fixed requirements
+- Fixed path joining issues
