@@ -36,8 +36,8 @@ def main():
 
         desc = cmd.__help__ if not admin else cmd.__helpadmin__
         embed = discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=desc)
-        embed.set_author(name="CYBERSEC", url="https://github.com/fssecur3/cybersec")
-        embed.set_footer(text="> Developed by Francisco Spínola (fssecur3)")
+        embed.set_author(name="CYBERSEC", url="https://github.com/nu11pointer/cybersec")
+        embed.set_footer(text="> Developed by nu11pointer")
         embed.set_thumbnail(url="https://en.gravatar.com/userimage/224659032/c4b7169b35d5b85855a209c844f03543.png?size=200")
         await ctx.send(embed=embed)
 
