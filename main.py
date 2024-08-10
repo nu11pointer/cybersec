@@ -4,16 +4,23 @@ import discord
 import os
 import platform
 import pathlib
+import aiohttp
 from discord.ext import commands
 import src.exploit as searchsploit
 import src.log as log
 import src.virustotal as virustotal
 import src.encoding as encoding
 import src.nvd as nvd
-import src.cmd_admin as admin
-import src.cmd as cmd
+import src.command_admin as admin
+import src.command as command
 import src.writeups as writeups
 import src.hashes as hashes
+import src.listen as listen
+import src.reverseshell as reverseshell
+import src.shellc0de as shellc0de
+import src.help as hlp
+import src.shodan as sd
+from src.help import SUBS
 from src.args import parse
 from src.version import __version__
 
@@ -27,14 +34,55 @@ def main():
         os.mkdir(os.path.join(PATH, "logs"))
     
     @bot.command()
-    async def help(ctx):
+    async def help(ctx, sub=""):
+        global SUBS
+        desc = ""
         admin = False
         for role in ctx.author.roles:
             if (argv.management_role == role.name):
                 if (argv.management_channel and argv.management_channel == ctx.channel.name):
                     admin = True
-
-        desc = cmd.__help__ if not admin else cmd.__helpadmin__
+        if (sub == ""):
+            desc = hlp.help() if not admin else hlp.help_admin()
+        elif (sub not in SUBS):
+            await ctx.send(f"Command '{sub}' does not exist! Use {bot.command_prefix}help.")
+            return
+        else:
+            if (sub == "crack"):
+                desc = hlp.help_crack(bot.command_prefix)
+            elif (sub == "env"):
+                desc = hlp.help_env(bot.command_prefix)
+            elif (sub == "cve"):
+                desc = hlp.help_cve(bot.command_prefix)
+            elif (sub == "encode"):
+                desc = hlp.help_encode(bot.command_prefix)
+            elif (sub == "decode"):
+                desc = hlp.help_decode(bot.command_prefix)
+            elif (sub == "exploit"):
+                desc = hlp.help_exploit(bot.command_prefix)
+            elif (sub == "hashid"):
+                desc = hlp.help_hashid(bot.command_prefix)
+            elif (sub == "hello"):
+                desc = hlp.help_hello(bot.command_prefix)
+            elif (sub == "help"):
+                desc = hlp.help_help(bot.command_prefix)
+            elif (sub == "listener"):
+                desc = hlp.help_listener(bot.command_prefix)
+            elif (sub == "ping"):
+                desc = hlp.help_ping(bot.command_prefix)
+            elif (sub == "revshell"):
+                desc = hlp.help_revshell(bot.command_prefix)
+            elif (sub == "set"):
+                desc = hlp.help_set(bot.command_prefix)
+            elif (sub == "shellcode"):
+                desc = hlp.help_shellcode(bot.command_prefix)
+            elif (sub == "shodan"):
+                desc = hlp.help_shodan(bot.command_prefix)
+            elif (sub == "vt"):
+                desc = hlp.help_vt(bot.command_prefix)
+            elif (sub == "writeup"):
+                desc = hlp.help_writeup(bot.command_prefix)
+        
         embed = discord.Embed(title="\t*Help Page*", colour=discord.Colour.green(), type="article", description=desc)
         embed.set_author(name="CYBERSEC", url="https://github.com/fssecur3/cybersec")
         embed.set_footer(text="> Developed by Francisco Spínola (fssecur3)")
@@ -43,19 +91,11 @@ def main():
 
     @bot.command(help="be nice and greet me!")
     async def hello(ctx):
-        await ctx.send(cmd.hello(ctx.message.author))
-        
-    @bot.command(help="who am I?")
-    async def whoami(ctx):
-        await ctx.send(cmd.whoami(bot.user.name))
-
-    @bot.command(help="why not?")
-    async def id(ctx):
-        await ctx.send(cmd.id(bot.user.name.lower(), ctx.author.name))
+        await ctx.send(command.hello(ctx.message.author))
 
     @bot.command(help="check the bot latency")
     async def ping(ctx):
-        await ctx.send(cmd.ping(bot.latency))
+        await ctx.send(command.ping(bot.latency))
     
     @bot.command(help="display the current API keys")
     @commands.has_role(argv.management_role)
@@ -79,7 +119,17 @@ def main():
     async def exploit(ctx, *, keywords):
         out, components = searchsploit.exploit(keywords)
         await ctx.send(out, components=components)
-        
+    
+    @bot.command(help="search on shodan")
+    async def shodan(ctx, *, keywords):
+        out = sd.search(keywords)
+        await ctx.send(out)
+    
+    @bot.command(help="identify hashes")
+    async def hashid(ctx, hash):
+        out = hashes.hash_id(hash)
+        await ctx.send(out)
+
     @bot.command(help="get details from a CVE")
     async def cve(ctx, value):
         if (not os.getenv("NVD_API_KEY")):
@@ -88,14 +138,31 @@ def main():
 
         out, components = nvd.cve(value)
         await ctx.send(out, components=components)
+    
+    @bot.command(help="listener generator")
+    async def listener(ctx, type="", port="9001"):
+        if (type.isnumeric()):
+            port = type
+            type = ""
+        out = listen.listener(type, port)
+        await ctx.send(out)
+    
+    @bot.command(help="revshell generator")
+    async def revshell(ctx, type, host, port, bash="/bin/sh"):
+        out = reverseshell.create(type, host, port, bash)
+        await ctx.send(out)
         
     @bot.command(help="search for CTFtime writeups related to the provided keywords")
     async def writeup(ctx, *, vars):
         query = f"site:ctftime.org inurl:writeup {vars}"
 
         response, components = writeups.search(query)
-
         await ctx.send(response, components=components)
+    
+    @bot.command(help="search for shellcode")
+    async def shellcode(ctx, *, query):
+        response = shellc0de.shellcode(query)
+        await ctx.send(response)
 
     @bot.command(help="search for a given hash on VirusTotal")
     async def vt(ctx, hash):
@@ -118,7 +185,7 @@ def main():
     
     @bot.command(help="crack a hash")
     async def crack(ctx, alg, hash):
-        ret = hashes.crack(alg, hash)
+        ret = hashes.crack(hash, alg)
         await ctx.send(ret)
             
     @bot.event
@@ -135,7 +202,7 @@ def main():
         if isinstance(error, commands.CommandNotFound):
             await ctx.send(f"Unknown command! Use {bot.command_prefix}help.")
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"Missing a required argument. Do {bot.command_prefix}help.")
+            await ctx.send(f"Missing a required argument. Do {bot.command_prefix}help {ctx.command}.")
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("You do not have the appropriate permissions to run this command.")
         if isinstance(error, commands.MissingRole):
@@ -150,6 +217,8 @@ def main():
         print("Unauthorized: Improper token provided!")
     except RuntimeError:
         print("Aborting...")
+    except aiohttp.client_exceptions.ClientConnectorError:
+        print("Could not connect to discord servers!")
 
 if __name__ == "__main__":
     main()

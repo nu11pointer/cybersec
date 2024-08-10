@@ -14,49 +14,78 @@ def search(query):
     if (req.status_code == 429):
         response = "Too many requests! Wait a few minutes and try again."
         return response, components
-    soup = BeautifulSoup(req.text, 'html.parser')
-    results = []
-    for entry in soup.find_all('div', class_="Gx5Zad fP1Qef xpd EtOod pkphOe"):
-        title = entry.find('h3').div.get_text()
-        link = entry.find('a')['href'].split("=")[1].split("&")[0]
-        description = entry.find('div', class_="BNeawe s3v9rd AP7Wnd").div.div.div.get_text()
-        results.append({'title': title, 'link': link, 'description': description})
-    
-    q = query.split("site:ctftime.org inurl:writeup")[1].strip()
-    response = f"**Query:** `{q}`"
-    response += f"""
+    try:
+        soup = BeautifulSoup(req.text, 'html.parser')
+        results = []
+        for entry in soup.find_all('div', class_="Gx5Zad fP1Qef xpd EtOod pkphOe"):
+            title = entry.find('h3').div.get_text()
+            link = entry.find('a')['href'].split("=")[1].split("&")[0]
+            description = entry.find('div', class_="BNeawe s3v9rd AP7Wnd").div.div.div.get_text()
+            results.append({'title': title, 'link': link, 'description': description})
+        
+        q = query.split("site:ctftime.org inurl:writeup")[1].strip()
+        response = f"**Query:** `{q}`"
+        response += f"""
 
 Results:
 ```
 """
-    for i in range(len(results)):
-        try:
-            r = results[i]
-            length = len(r["title"])
-            for z in range(length + 7):
-                response += "~"
-            response += "\n"
-            
-            response += "| " + f"{i + 1}. "
-            response += r["title"] + " |\n"
-            for z in range(length + 7):
-                response += "~"
-            response += "\n\t" + r["description"].replace("`", "")
-            response += "\n\n"
-        except:
-            return "Error while performing query.", None
+        for i in range(len(results)):
+            try:
+                r = results[i]
+                length = len(r["title"])
+                for z in range(length + 7):
+                    response += "~"
+                response += "\n"
+                
+                response += "| " + f"{i + 1}. "
+                response += r["title"] + " |\n"
+                for z in range(length + 7):
+                    response += "~"
+                response += "\n\t" + r["description"].replace("`", "")
+                response += "\n\n"
+            except:
+                return "Error while performing query.", None
 
-        if i == 4:
-            break
+            if i == 4:
+                break
 
-    response += "```"
-    
-    if (len(results) >= 5):
-        components = ActionRow(
-                Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
-                Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"]),
-                Button(label="", style=ButtonStyle.red, emoji="3️⃣", url=results[2]["link"]),
-                Button(label="", style=ButtonStyle.red, emoji="4️⃣", url=results[3]["link"]),
-                Button(label="", style=ButtonStyle.red, emoji="5️⃣", url=results[4]["link"])
-            )
+        response += "```"
+        
+        if (len(results) >= 5):
+            components = ActionRow(
+                    Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="3️⃣", url=results[2]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="4️⃣", url=results[3]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="5️⃣", url=results[4]["link"])
+                )
+        elif (len(results) == 4):
+            components = ActionRow(
+                    Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="3️⃣", url=results[2]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="4️⃣", url=results[3]["link"])
+                )
+        elif (len(results) == 3):
+            components = ActionRow(
+                    Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="3️⃣", url=results[2]["link"])
+                )
+        elif (len(results) == 2):
+            components = ActionRow(
+                    Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"]),
+                    Button(label="", style=ButtonStyle.red, emoji="2️⃣", url=results[1]["link"])
+                )
+        elif (len(results) == 1):
+            components = ActionRow(
+                    Button(label="", style=ButtonStyle.red, emoji="1️⃣", url=results[0]["link"])
+                )
+        else:
+            components = None
+            response = "No results."
+    except:
+        response = "Error while performing query."
+        components = None
     return response, components

@@ -40,7 +40,7 @@
 ## 1.3.0 - 19/04/2023 - Hash cracker
 
 - Fixed unauthorized access logging bug which was raising exception
-- New command "crack" - has the ability to try and "crack" a hash by accessing the Hash-Decrypt API
+- New command: `crack` - has the ability to try and "crack" a hash by accessing the Hash-Decrypt API
 - Removed the Google API
 - Fixed writeup searching
 - Interface improvement
@@ -50,3 +50,16 @@
 
 - Fixed requirements
 - Fixed path joining issues
+
+## 2.0 - 24/04/2023 - New Features
+
+- New command: `listener` - provides commands to create a listener for a reverse shell
+- New command: `revshell` - reverse shell generator for several programming/scripting languages
+- New command: `hashid` - automatically identify the possible algorithms behind a hash
+- New command: `shellcode` - search for shellcode available on ShellStorm
+- New command: `shodan` - search on shodan
+- Removed command: `whoami`
+- Removed command: `id`
+- `crack` command now supports the argument `auto`, trying to automatically identify the provided hash and to crack it after
+- `help` command can now be invoked with arguments (`help <command>`), providing more information and help about each command
+- Interface improvement
